@@ -40,21 +40,20 @@ def expirado(context: CallbackContext) -> None:
     context.bot.delete_message(chat_id=chat_data['chat_id'], message_id=user_data['captcha_message'].message_id)
     context.bot.ban_chat_member(chat_data['chat_id'], user_data['user_id'], until_date=int(round(300 + timestamp)), revoke_messages=False)
 
-def onleave(update: Update, context: CallbackContext) -> int:
+def onleave(update: Update, context: CallbackContext) -> None:
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
 def onjoin(update: Update, context: CallbackContext) -> int:
+    # Delete join message?
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
     chat_id = update.message.chat_id
     me = context.bot.get_me()
-
-    # if me.id not in get_admin_ids(context.bot, chat_id):
-    #     return
 
     for member in update.message.new_chat_members:
         if me.id == member.id:
             context.bot.send_message(chat_id, text='💀 Cheguei pessoal!')
-        #elif not member.is_bot and me.id in get_admin_ids(context.bot, chat_id):
-        elif me.id in get_admin_ids(context.bot, chat_id):
+        elif not member.is_bot and me.id in get_admin_ids(context.bot, chat_id):
             nick = f'@{member.username}'
             mensagem = f'\n💣 ATENÇÃO {nick} 💣\n\nResponda o captcha na imagem em até: {EXP}\n\nOu você será kickado do grupo!'
             image = ImageCaptcha(width=190, height=90)
@@ -66,8 +65,6 @@ def onjoin(update: Update, context: CallbackContext) -> int:
 
             data = image.generate(captcha_text)
             image.write(captcha_text, 'captcha.png')
-
-            context.bot.send_message(chat_id, text="Member " + str(member))
 
             context.user_data['captcha_message'] = context.bot.send_photo(chat_id, photo=open('captcha.png', 'rb'), caption=mensagem)
             context.job_queue.run_once(expirado, SEC, context={'job_data': chat_id, 'user_data': context.user_data, 'chat_data': context.chat_data}, name=str(chat_id))
@@ -97,11 +94,9 @@ def pong(update: Update, context: CallbackContext) -> None:
 def cancel(update, context):
     return
 
-def censor(update: Update, context: CallbackContext) -> int:
+def censor(update: Update, context: CallbackContext) -> None:
     if any(x in update.message.text.lower() for x in blacklist):
         context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
-    
-
 
 def main():
     persistence = PicklePersistence(filename='pickle')
