@@ -39,8 +39,12 @@ def expirado(context: CallbackContext) -> None:
 
     context.bot.delete_message(chat_id=chat_data['chat_id'], message_id=user_data['captcha_message'].message_id)
     context.bot.ban_chat_member(chat_data['chat_id'], user_data['user_id'], until_date=twoyears, revoke_messages=False)
-    
-def captcha_run(update: Update, context: CallbackContext) -> int:
+
+def onleave(update: Update, context: CallbackContext) -> int:
+    context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+def onjoin(update: Update, context: CallbackContext) -> int:
+    mensagem = u'\n💣 ATENÇÃO 💣\n\nResponda o captcha na imagem em até: {EXP}\n\nOu você será kickado do grupo!'
     chat_id = update.message.chat_id
     me = context.bot.get_me()
 
@@ -48,7 +52,8 @@ def captcha_run(update: Update, context: CallbackContext) -> int:
         return
 
     for member in update.message.new_chat_members:
-        if me.id == member.id or member.is_bot:
+        # if me.id == member.id or member.is_bot:
+        if me.id == member.id:
             return
         else:
             image = ImageCaptcha(width=190, height=90)
@@ -61,12 +66,16 @@ def captcha_run(update: Update, context: CallbackContext) -> int:
             data = image.generate(captcha_text)
             image.write(captcha_text, 'captcha.png')
 
-            context.user_data['captcha_message'] = context.bot.send_photo(chat_id, photo=open('captcha.png', 'rb'), caption='Responda o captcha na imagem em até: ' + EXP)
+            context.bot.send_message(chat_id, text="Member " + str(member))
+
+            context.user_data['captcha_message'] = context.bot.send_photo(chat_id, photo=open('captcha.png', 'rb'), caption=mensagem)
             context.job_queue.run_once(expirado, SEC, context={'job_data': chat_id, 'user_data': context.user_data, 'chat_data': context.chat_data}, name=str(chat_id))
 
             return CAPTCHA
 
-def captcha_check(update: Update, context: CallbackContext) -> int:
+def captcha(update: Update, context: CallbackContext) -> int:
+    chat_id = update.message.chat_id
+    
     if update.message.text.lower() == context.user_data['captcha']:
         context.bot.delete_message(chat_id=update.message.chat_id, message_id=context.user_data['captcha_message'].message_id)
         context.user_data['bemvindo_message'] = context.bot.send_message(update.message.chat_id, text="Bem-vindo ao grupo!")
@@ -94,14 +103,18 @@ def main():
 
     dispatcher.add_handler(CommandHandler("ping", pong))
     
+    # Ao entrar
     captcha_handler = ConversationHandler(
-        entry_points=[CommandHandler('cap', captcha_run), MessageHandler(Filters.status_update.new_chat_members, captcha_run)],
+        entry_points=[CommandHandler('cap', onjoin), MessageHandler(Filters.status_update.new_chat_members, onjoin)],
         states={
-            CAPTCHA: [MessageHandler(Filters.text & ~Filters.command, captcha_check)]
+            CAPTCHA: [MessageHandler(Filters.text & ~Filters.command, captcha)]
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
     dispatcher.add_handler(captcha_handler)
+
+    # Ao sair     
+    dispatcher.add_handler(MessageHandler(Filters.status_update.left_chat_member, onleave))
 
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=URL + TOKEN)
     updater.idle()
