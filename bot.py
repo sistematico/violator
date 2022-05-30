@@ -5,7 +5,7 @@ from mwt import MWT
 from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext)
-#import filters
+from config.blacklist import blacklist
 
 URL = 'https://violator-tgbot.herokuapp.com/'
 TOKEN = '5360638177:AAGiiwHsH_SirBn2NluIOKMv08frt3nFC2M'
@@ -96,6 +96,12 @@ def pong(update: Update, context: CallbackContext) -> None:
 def cancel(update, context):
     return
 
+def censor(update: Update, context: CallbackContext) -> int:
+    if any(x in update.message.text.lower() for x in blacklist):
+        context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
+    
+
+
 def main():
     persistence = PicklePersistence(filename='pickle')
     updater = Updater(TOKEN, persistence=persistence, use_context=True)
@@ -115,6 +121,9 @@ def main():
 
     # Ao sair     
     dispatcher.add_handler(MessageHandler(Filters.status_update.left_chat_member, onleave))
+
+    # Censura
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, censor))
 
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=URL + TOKEN)
     updater.idle()
