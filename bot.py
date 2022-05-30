@@ -38,24 +38,24 @@ def expirado(context: CallbackContext) -> None:
     user_data = context.job.context['user_data']
 
     context.bot.delete_message(chat_id=chat_data['chat_id'], message_id=user_data['captcha_message'].message_id)
-    context.bot.ban_chat_member(chat_data['chat_id'], user_data['user_id'], until_date=twoyears, revoke_messages=False)
+    context.bot.ban_chat_member(chat_data['chat_id'], user_data['user_id'], until_date=int(round(300 + timestamp)), revoke_messages=False)
 
 def onleave(update: Update, context: CallbackContext) -> int:
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
 def onjoin(update: Update, context: CallbackContext) -> int:
-    mensagem = u'\n💣 ATENÇÃO 💣\n\nResponda o captcha na imagem em até: {EXP}\n\nOu você será kickado do grupo!'
     chat_id = update.message.chat_id
     me = context.bot.get_me()
 
-    if me.id not in get_admin_ids(context.bot, chat_id):
-        return
+    # if me.id not in get_admin_ids(context.bot, chat_id):
+    #     return
 
     for member in update.message.new_chat_members:
-        # if me.id == member.id or member.is_bot:
         if me.id == member.id:
-            return
-        else:
+            context.bot.send_message(chat_id, text='💀 Cheguei pessoal!')
+        elif not member.is_bot and me.id in get_admin_ids(context.bot, chat_id):
+            nick = f'@{member.username}'
+            mensagem = f'\n💣 ATENÇÃO {nick} 💣\n\nResponda o captcha na imagem em até: {EXP}\n\nOu você será kickado do grupo!'
             image = ImageCaptcha(width=190, height=90)
             captcha_text = random_char(3)
 
@@ -75,7 +75,7 @@ def onjoin(update: Update, context: CallbackContext) -> int:
 
 def captcha(update: Update, context: CallbackContext) -> int:
     chat_id = update.message.chat_id
-    
+
     if update.message.text.lower() == context.user_data['captcha']:
         context.bot.delete_message(chat_id=update.message.chat_id, message_id=context.user_data['captcha_message'].message_id)
         context.user_data['bemvindo_message'] = context.bot.send_message(update.message.chat_id, text="Bem-vindo ao grupo!")
