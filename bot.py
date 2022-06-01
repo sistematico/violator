@@ -8,7 +8,6 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, ConversationH
 from config.blacklist import blacklist
 
 URL = 'https://violator-tgbot.herokuapp.com/'
-TOKEN = '5360638177:AAGiiwHsH_SirBn2NluIOKMv08frt3nFC2M'
 PORT = int(os.environ.get('PORT', '8443'))
 SEC = 300
 EXP = time.strftime('%S segundos', time.gmtime(SEC)) if SEC < 60 else time.strftime('%M minutos', time.gmtime(SEC))
