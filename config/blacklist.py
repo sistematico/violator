@@ -15,5 +15,6 @@ blacklist = [
     'adestramento inteligente',
     'ensine seu cão',
     'ensine seu cachorro',
-    'raissa sampaio'
+    'raissa sampaio',
+    'você quer sabe como ganhar'
 ]
