@@ -6,7 +6,7 @@ from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext)
 from config.blacklist import blacklist
-from config.credentials import TOKEN
+#from config.credentials import TOKEN
 
 TOKEN = os.environ['TOKEN']
 URL = 'https://violator-tgbot.herokuapp.com/'
