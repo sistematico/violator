@@ -1,12 +1,14 @@
 import os, random, string, time
 from datetime import datetime
 from uuid import uuid4
-from mwt import MWT
+from violator.mwt import MWT
 from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext)
 from config.blacklist import blacklist
+from config.credentials import TOKEN
 
+TOKEN = os.environ['TOKEN']
 URL = 'https://violator-tgbot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', '8443'))
 SEC = 300

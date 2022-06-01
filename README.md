@@ -5,3 +5,11 @@
 </div>
 
 Um bot anti-spam para Telegram
+
+## Instalação
+
+Em breve.
+
+## Uso
+
+Em breve.
