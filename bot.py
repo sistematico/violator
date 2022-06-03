@@ -1,5 +1,4 @@
 import os, random, string, time
-from datetime import datetime
 from uuid import uuid4
 from violator.mwt import MWT
 from captcha.image import ImageCaptcha
@@ -14,9 +13,7 @@ SEC = 300
 EXP = time.strftime('%S segundos', time.gmtime(SEC)) if SEC < 60 else time.strftime('%M minutos', time.gmtime(SEC))
 CAPTCHA, CHECK = range(2)
 
-curr_dt = datetime.now()
-timestamp = int(round(curr_dt.timestamp()))
-twoyears = int(round(63072000 + timestamp))
+timestamp = int(time.time())
 
 #@MWT(timeout=60*60)
 def get_admin_ids(bot, chat_id):
@@ -51,12 +48,10 @@ def onjoin(update: Update, context: CallbackContext) -> int:
     me = context.bot.get_me()
 
     for member in update.message.new_chat_members:
-        context.bot.send_message(update.message.chat_id, text=str(member))
-
         if me.id == member.id:
             context.bot.send_message(chat_id, text='💀 Cheguei pessoal!')
         elif not member.is_bot and me.id in get_admin_ids(context.bot, chat_id):
-            nick = f'@{member.username}'
+            nick = f'@{member.username}' if member.username != 'None' else f'@{member.first_name}'
             mensagem = f'\n💣 ATENÇÃO {nick} 💣\n\nResponda o captcha na imagem em até: {EXP}\n\nOu você será kickado do grupo!'
             image = ImageCaptcha(width=190, height=90)
             captcha_text = random_char(3)
