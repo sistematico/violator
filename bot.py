@@ -92,7 +92,7 @@ def pong(update: Update, context: CallbackContext) -> None:
 def cancel():
     return
 
-@restricted
+#@restricted
 def censor(update: Update, context: CallbackContext) -> None:
     if any(x in update.message.text.lower() for x in blacklist):
         context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
