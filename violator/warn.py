@@ -30,5 +30,6 @@ def warn(update: Update, context: CallbackContext) -> str:
     
     
     # update.message.reply_text(key)
-    update.message.reply_text(repr(update))
+    # update.message.reply_text(repr(update))
+    update.message.reply_text(print vars(update))
 
