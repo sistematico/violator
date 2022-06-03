@@ -6,7 +6,6 @@ from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext)
 from config.blacklist import blacklist
-#from config.credentials import TOKEN
 
 TOKEN = os.environ['TOKEN']
 URL = 'https://violator-tgbot.herokuapp.com/'
@@ -47,6 +46,9 @@ def onleave(update: Update, context: CallbackContext) -> None:
 def onjoin(update: Update, context: CallbackContext) -> int:
     # Delete join message?
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+
+    context.bot.send_message(update.message.chat_id, text=str(update.message.new_chat_members))
+    
 
     chat_id = update.message.chat_id
     me = context.bot.get_me()
@@ -92,7 +94,7 @@ def random_char(y):
 def pong(update: Update, context: CallbackContext) -> None:
     context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
 
-def cancel(update, context):
+def cancel():
     return
 
 def censor(update: Update, context: CallbackContext) -> None:
