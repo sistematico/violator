@@ -47,13 +47,12 @@ def onjoin(update: Update, context: CallbackContext) -> int:
     # Delete join message?
     context.bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
 
-    context.bot.send_message(update.message.chat_id, text=str(update.message.new_chat_members))
-    
-
     chat_id = update.message.chat_id
     me = context.bot.get_me()
 
     for member in update.message.new_chat_members:
+        context.bot.send_message(update.message.chat_id, text=str(member))
+
         if me.id == member.id:
             context.bot.send_message(chat_id, text='💀 Cheguei pessoal!')
         elif not member.is_bot and me.id in get_admin_ids(context.bot, chat_id):
