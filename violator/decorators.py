@@ -1,13 +1,5 @@
 from functools import wraps
 
-# def restricted(func):
-#     @wraps(func)
-#     async def wrapped(update, context):
-#         if update.effective_user.id in update.get_chat_administrators(update.effective_chat.id):
-#             context.bot.send_message(update.message.chat_id, text="É admin")
-#             return
-#         return await func(update, context)
-#     return wrapped
 def restricted(func):
     @wraps(func)
     def wrapped(update, context):
