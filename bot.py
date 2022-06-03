@@ -3,15 +3,12 @@ from uuid import uuid4
 from violator.mwt import MWT
 from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import (ApplicationBuilder, Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext)
+from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext
 from config.blacklist import blacklist
 from violator.decorators import restricted
 from violator.warn import *
 
-MODE = os.environ.get('MODE', 'webhook')
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
-#TOKEN = os.environ['TOKEN']
-
 URL = 'https://violator-tgbot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', '8443'))
 SEC = 300
@@ -126,21 +123,9 @@ def main():
     # Warn
     dispatcher.add_handler(CommandHandler("warn", warn))
     dispatcher.add_handler(CommandHandler("warns", warns))
-
-    #if MODE == 'webhook':
-    
+   
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=URL + TOKEN)
     updater.idle()
-    
-    # else:
-    #     application = ApplicationBuilder().token(TOKEN).build()
-    
-    #     start_handler = CommandHandler('start', start)
-    #     application.add_handler(start_handler)
-    
-    #     application.run_polling()
-    
-
 if __name__ == '__main__':
     main()
 
