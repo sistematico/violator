@@ -16,5 +16,6 @@ blacklist = [
     'ensine seu cão',
     'ensine seu cachorro',
     'raissa sampaio',
-    'você quer sabe como ganhar'
+    'você quer sabe como ganhar',
+    'hotmart.com'
 ]
