@@ -1,5 +1,6 @@
 import os, random, string, time
 from uuid import uuid4
+from functools import wraps
 from violator.mwt import MWT
 from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -14,6 +15,15 @@ EXP = time.strftime('%S segundos', time.gmtime(SEC)) if SEC < 60 else time.strft
 CAPTCHA, CHECK = range(2)
 
 timestamp = int(time.time())
+
+
+def restricted(func):
+    @wraps(func)
+    async def wrapped(update, context, *args, **kwargs):
+        if update.effective_user.id not in update.get_chat_administrators(update.effective_chat.id):
+            return
+        return await func(update, context, *args, **kwargs)
+    return wrapped
 
 #@MWT(timeout=60*60)
 def get_admin_ids(bot, chat_id):
@@ -90,6 +100,7 @@ def pong(update: Update, context: CallbackContext) -> None:
 def cancel():
     return
 
+@restricted
 def censor(update: Update, context: CallbackContext) -> None:
     if any(x in update.message.text.lower() for x in blacklist):
         context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
