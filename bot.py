@@ -53,14 +53,13 @@ def onjoin(update: Update, context: CallbackContext) -> int:
         elif not member.is_bot and me.id in get_admin_ids(context.bot, chat_id):
             nick = f'@{member.username}' if member.username != 'None' else f'@{member.first_name}'
             mensagem = f'\n💣 ATENÇÃO {nick} 💣\n\nResponda o captcha na imagem em até: {EXP}\n\nOu você será kickado do grupo!'
-            image = ImageCaptcha(width=190, height=90)
             captcha_text = random_char(3)
 
             context.user_data['captcha'] = captcha_text
             context.user_data['user_id'] = member.id
             context.chat_data['chat_id'] = chat_id
 
-            data = image.generate(captcha_text)
+            image = ImageCaptcha(width=190, height=90)
             image.write(captcha_text, 'captcha.png')
 
             context.user_data['captcha_message'] = context.bot.send_photo(chat_id, photo=open('captcha.png', 'rb'), caption=mensagem)
