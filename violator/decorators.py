@@ -14,6 +14,6 @@ def restricted(func):
         # if update.effective_user.id in update.get_chat_administrators(update.effective_chat.id):
             # context.bot.send_message(update.message.chat_id, text="É admin")
             # return
-        context.bot.send_message(update.message.chat_id, text=str(update.context.get_chat_administrators(update.effective_chat.id)))
+        context.bot.send_message(update.message.chat_id, text=str(context.get_chat_administrators(update.effective_chat.id)))
         return func(update, context)
     return wrapped
