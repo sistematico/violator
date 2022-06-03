@@ -1,6 +1,8 @@
 from uuid import uuid4
+from telegram import Update
+from telegram.ext import CallbackContext
 
-async def warn(update, context):
+async def warn(update: Update, context: CallbackContext) -> str:
     """Usage: /put value"""
     # Generate ID and separate value from command
     key = str(uuid4())
@@ -12,7 +14,7 @@ async def warn(update, context):
     # Send the key to the user
     await update.message.reply_text(key)
 
-async def warns(update, context):
+async def warns(update: Update, context: CallbackContext) -> str:
     """Usage: /get uuid"""
     # Seperate ID from command
     key = context.args[0]
