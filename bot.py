@@ -19,10 +19,11 @@ timestamp = int(time.time())
 
 def restricted(func):
     @wraps(func)
-    async def wrapped(update, context, *args, **kwargs):
-        if update.effective_user.id not in update.get_chat_administrators(update.effective_chat.id):
+    async def wrapped(update, context):
+        if update.effective_user.id in update.get_chat_administrators(update.effective_chat.id):
+            context.bot.send_message(update.message.chat_id, text="É admin")
             return
-        return await func(update, context, *args, **kwargs)
+        return await func(update, context)
     return wrapped
 
 #@MWT(timeout=60*60)
