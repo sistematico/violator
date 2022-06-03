@@ -1,11 +1,12 @@
 import os, random, string, time
 from uuid import uuid4
 from violator.mwt import MWT
-from violator.decorators import restricted
 from captcha.image import ImageCaptcha
 from telegram import Update, Chat, ChatMember, ChatMemberUpdated, ParseMode, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext)
 from config.blacklist import blacklist
+from violator.decorators import restricted
+from violator.warn import *
 
 TOKEN = os.environ['TOKEN']
 URL = 'https://violator-tgbot.herokuapp.com/'
@@ -15,7 +16,6 @@ EXP = time.strftime('%S segundos', time.gmtime(SEC)) if SEC < 60 else time.strft
 CAPTCHA, CHECK = range(2)
 
 timestamp = int(time.time())
-
 
 #@MWT(timeout=60*60)
 def get_admin_ids(bot, chat_id):
@@ -92,7 +92,7 @@ def pong(update: Update, context: CallbackContext) -> None:
 def cancel():
     return
 
-#@restricted
+@restricted
 def censor(update: Update, context: CallbackContext) -> None:
     if any(x in update.message.text.lower() for x in blacklist):
         context.bot.delete_message(chat_id=update.message.chat.id, message_id=update.message.message_id)
@@ -119,6 +119,10 @@ def main():
 
     # Censura
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, censor))
+    
+    # Warn
+    dispatcher.add_handler(CommandHandler("warn", warn))
+    dispatcher.add_handler(CommandHandler("warns", warns))
 
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=URL + TOKEN)
     updater.idle()
