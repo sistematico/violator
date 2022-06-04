@@ -8,6 +8,7 @@ from config.blacklist import blacklist
 from violator.decorators import restricted
 from violator.warn import *
 
+MODE = os.environ.get('MODE', 'polling')
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
 URL = 'https://violator-tgbot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', '8443'))
@@ -124,8 +125,14 @@ def main():
     dispatcher.add_handler(CommandHandler("warn", warn))
     dispatcher.add_handler(CommandHandler("warns", warns))
    
-    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=URL + TOKEN)
-    updater.idle()
+    if MODE == 'webhook':
+        # enable webhook
+        updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=URL + TOKEN)
+        updater.idle()
+    else:
+        # enable polling
+        updater.start_polling()
+
 if __name__ == '__main__':
     main()
 
