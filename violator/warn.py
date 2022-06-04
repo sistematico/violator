@@ -1,35 +1,41 @@
-from uuid import uuid4
 from telegram import Update
 from telegram.ext import CallbackContext
+from violator.decorators import group
 
+def get(update: Update, context: CallbackContext, key: str) -> int:
+    chat_id = update.message.chat.id
+
+    if chat_id in context.user_data.keys() and key in context.user_data[chat_id]:
+        return context.user_data[chat_id][key]
+    else: 
+        return 0
+
+@group
 def warns(update: Update, context: CallbackContext):
-    """Usage: /get uuid"""
-    # Seperate ID from command
-    # key = context.args[0]
+    if update.message.chat.type != 'supergroup' and update.message.chat.type != 'group':
+        return
 
-    # Load value and send it to the user
-    # value = context.user_data.get(key, 'Not found')
-    # update.message.reply_text(value)
+    warnings = get(update, context, 'warns')
+    stars = get(update, context, 'stars')
 
-    # return context.user_data.get(key)
-    # return context.user_data[key]
-    key = context.args[0]
-    update.message.reply_text(context.user_data[key])
+    if warnings < 1:
+        update.message.reply_text('Sem warnings')
+    else:
+        update.message.reply_text(warnings)
+ 
 
-def warn(update: Update, context: CallbackContext) -> str:
-    key = str(uuid4())
-    #value = update.message.text.partition(' ')[2]
+@group
+def warn(update: Update, context: CallbackContext):
+    if update.message.chat.type != 'supergroup' and update.message.chat.type != 'group':
+        return
+
+    key = update.message.chat.id
+    warnings = get(update, context, 'warns') + 1
+    stars = get(update, context, 'stars')
+      
     profile = {
-        'warns': 0,
-        'stars': 0
+        'warns': warnings,
+        'stars': stars
     }
 
-    # Store value
     context.user_data[key] = profile
-    # Send the key to the user
-    
-    
-    # update.message.reply_text(key)
-    # update.message.reply_text(repr(update))
-    update.message.reply_text(vars(update))
-

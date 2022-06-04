@@ -1,3 +1,5 @@
 captcha.png
 .commit
 credentials.py
+__pycache__
+pickle
