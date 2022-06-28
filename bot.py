@@ -7,7 +7,6 @@ from telegram import Update
 #from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, ChatMemberHandler, Filters, PicklePersistence, CallbackContext
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, CallbackQueryHandler, Filters, PicklePersistence, CallbackContext
 from config.blacklist import blacklist
-from violator.decorators import restricted
 from violator.warn import *
 
 MODE = os.environ.get('MODE', 'polling')
